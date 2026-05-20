@@ -1,18 +1,17 @@
 {
-  "name": "my-career-toolbox",
+  "name": "resume-manager",
   "version": "1.0.0",
-  "description": "Ferramentas para agentes de IA auxiliarem na otimização de perfis do LinkedIn e gerenciamento de currículos em LaTeX.",
+  "description": "Pipeline YAML para gerar curriculos em LaTeX/PDF.",
   "type": "module",
   "packageManager": "pnpm@10.30.3",
   "scripts": {
     "build-resume": "tsc && node dist/scripts/build-resume.js"
   },
   "keywords": [
-    "linkedin",
     "resume",
-    "career",
-    "ai-agents",
-    "optimization"
+    "latex",
+    "yaml",
+    "curriculo"
   ],
   "author": "Gustavo Cosme",
   "license": "MIT",

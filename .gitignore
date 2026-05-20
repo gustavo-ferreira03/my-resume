@@ -1,8 +1,9 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
+# Python
+__pycache__/
+*.pyc
 
 # Environment files
 .env

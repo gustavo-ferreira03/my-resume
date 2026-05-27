@@ -12,9 +12,16 @@ from pydantic import ConfigDict
 ROOT = Path(__file__).parent.parent
 LATEX_DIR = ROOT / "data/output/latex"
 TEMPLATE_PATH = ROOT / "templates/output/latex/curriculo_template.tex"
-DATA_PATH = LATEX_DIR / "resume-data.yml"
+DEFAULT_DATA_PATH = LATEX_DIR / "resume-data.yml"
 BEGIN_DOCUMENT = r"\begin{document}"
 END_DOCUMENT = r"\end{document}"
+FONT_PACKAGES = {
+    "lmodern": r"\usepackage{lmodern}",
+    "charter": r"\usepackage{charter}",
+    "cormorant": r"\usepackage{CormorantGaramond}",
+    "fira-sans": r"\usepackage[sfdefault]{FiraSans}",
+    "source-sans": r"\usepackage[default]{sourcesanspro}",
+}
 
 
 class Period(BaseModel):
@@ -51,8 +58,17 @@ class Education(BaseModel):
     location: str
 
 
+class SectionTitles(BaseModel):
+    experience: str = "Experiencia Profissional"
+    projects: str = "Projetos"
+    skills: str = "Competencias e Idiomas"
+    education: str = "Formacao Academica"
+
+
 class ResumeData(BaseModel):
     personal: Personal
+    font: str = "lmodern"
+    section_titles: SectionTitles = Field(default_factory=SectionTitles)
     experience: list[Entry]
     projects: list[Entry]
     skills: list[SkillGroup]
@@ -66,6 +82,14 @@ class ResumeData(BaseModel):
             raise ValueError("output_filename must only contain letters, digits, _ or -")
         return v
 
+    @field_validator("font")
+    @classmethod
+    def validate_font(cls, v: str) -> str:
+        if v not in FONT_PACKAGES:
+            allowed = ", ".join(sorted(FONT_PACKAGES))
+            raise ValueError(f"font must be one of: {allowed}")
+        return v
+
 
 def url_to_display(url: str) -> str:
     return re.sub(r"^https?://", "", url)
@@ -76,6 +100,11 @@ def url_to_domain(url: str) -> str:
     parts = hostname.split(".")
     min_parts = 3 if re.search(r"\.(com|org|net|gov|edu)\.[a-z]{2}$", hostname) else 2
     return ".".join(parts[-min_parts:]) if len(parts) > min_parts else hostname
+
+
+def profile_username(url: str) -> str:
+    path = urlparse(url).path.strip("/")
+    return path.split("/")[-1] if path else url_to_display(url)
 
 
 def rich_to_latex(text: str) -> str:
@@ -143,9 +172,11 @@ def build_context(data: ResumeData) -> dict:
             "email": data.personal.email,
             "linkedin_url": data.personal.linkedin_url,
             "github_url": data.personal.github_url,
-            "linkedin_display": url_to_display(data.personal.linkedin_url),
-            "github_display": url_to_display(data.personal.github_url),
+            "linkedin_display": profile_username(data.personal.linkedin_url),
+            "github_display": profile_username(data.personal.github_url),
         },
+        "font_package": FONT_PACKAGES[data.font],
+        "section_titles": data.section_titles.model_dump(),
         "experience": [map_entry(e) for e in data.experience],
         "projects": [map_entry(e) for e in data.projects],
         "skills": [{"label": s.label, "items": s.items} for s in data.skills],
@@ -162,21 +193,29 @@ def build_context(data: ResumeData) -> dict:
     }
 
 
-def main() -> None:
-    raw = yaml.safe_load(DATA_PATH.read_text())
+def get_data_paths() -> list[Path]:
+    if len(sys.argv) > 1:
+        return [Path(arg) for arg in sys.argv[1:]]
+
+    localized_paths = sorted(LATEX_DIR.glob("resume-data-*.yml"))
+    return localized_paths if localized_paths else [DEFAULT_DATA_PATH]
+
+
+def build_resume(data_path: Path, template: str) -> Path:
+    raw = yaml.safe_load(data_path.read_text())
     try:
         data = ResumeData.model_validate(raw)
     except Exception as e:
-        print(str(e), file=sys.stderr)
+        print(f"{data_path}: {e}", file=sys.stderr)
         sys.exit(1)
 
-    template = TEMPLATE_PATH.read_text()
     begin_pos = template.index(BEGIN_DOCUMENT)
     end_pos = template.index(END_DOCUMENT)
 
     ctx = build_context(data)
+    preamble = render(template[:begin_pos], ctx)
     body = render(template[begin_pos + len(BEGIN_DOCUMENT) : end_pos], ctx)
-    tex = template[:begin_pos] + BEGIN_DOCUMENT + body + END_DOCUMENT + "\n"
+    tex = preamble + BEGIN_DOCUMENT + body + END_DOCUMENT + "\n"
 
     output_name = data.output_filename
     tex_path = LATEX_DIR / f"{output_name}.tex"
@@ -188,7 +227,7 @@ def main() -> None:
         ["pdflatex", "-interaction=nonstopmode", "-output-directory", str(LATEX_DIR), str(tex_path)],
     )
 
-    if result.returncode != 0 and not pdf_path.exists():
+    if result.returncode != 0:
         sys.exit(1)
 
     if not pdf_path.exists():
@@ -198,7 +237,14 @@ def main() -> None:
     for ext in ("aux", "log", "out"):
         (LATEX_DIR / f"{output_name}.{ext}").unlink(missing_ok=True)
 
-    print(f"PDF gerado: {pdf_path}")
+    return pdf_path
+
+
+def main() -> None:
+    template = TEMPLATE_PATH.read_text()
+    pdf_paths = [build_resume(data_path, template) for data_path in get_data_paths()]
+    for pdf_path in pdf_paths:
+        print(f"PDF gerado: {pdf_path}")
 
 
 if __name__ == "__main__":

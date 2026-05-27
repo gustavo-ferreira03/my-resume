@@ -67,8 +67,8 @@ def discover_data_paths(explicit_paths: list[Path]) -> list[Path]:
     if found:
         return found
 
-    print("No resume YAML files found. Add a .yml file to resumes/.", file=sys.stderr)
-    sys.exit(1)
+    print("No resume YAML files found. Add a .yml file to resumes/ to get started.")
+    sys.exit(0)
 
 
 def require_mapping(value: object, name: str) -> dict:

@@ -1,0 +1,106 @@
+personal:
+  name: Gustavo Ferreira Cosme
+  title: Desenvolvedor Full Stack Pleno
+  email: gustavo.ferreiracosme03@gmail.com
+  linkedin_url: https://linkedin.com/in/gustavo-cosme03
+  github_url: https://github.com/gustavo-ferreira03
+
+font: lmodern
+
+section_titles:
+  experience: Experiência Profissional
+  projects: Projetos
+  education: Formação Acadêmica
+  skills: Competências
+
+experience:
+  - company: PrimeUp
+    period:
+      from: Jan 2023
+      to: Atual
+    role: Desenvolvedor Full Stack
+    url: https://primeup.com.br
+    bullets:
+      - Projetei e implementei uma integração bidirecional entre o **Jira** e o **Citsmart** com **Spring Boot**, arquitetura hexagonal e **OracleDB**, automatizando a sincronização de tickets, documentos e estados operacionais.
+      - Estruturei uma suíte com cerca de **120 testes E2E** em **Java**, **Selenium** e **Cucumber**, com execução automatizada em **AWS EC2**, reduzindo regressões e trabalho manual em validações recorrentes.
+      - Desenvolvi automações em **Python** para validações, processamento de dados e suporte operacional, economizando cerca de **5 a 8 horas semanais** da equipe.
+      - Conduzi campanhas de pentest com **GoPhish**, configurei **DNS/SMTP**, apoiei relatórios de vulnerabilidades e administrei instâncias **EC2** em ambientes **Linux/AWS**, fortalecendo a entrega técnica em segurança e infraestrutura.
+
+  - company: Contractor Buddy
+    period:
+      from: Jan 2025
+      to: Mar 2025
+    role: Desenvolvedor Full Stack
+    url: https://contractorbuddy.io
+    bullets:
+      - Integrei a **API da OpenAI** a um sistema em produção para gerar descrições e estruturas iniciais de tarefas com IA, reduzindo preenchimento manual em um fluxo usado por clientes reais.
+      - Desenvolvi o fluxo full-stack em **Vue.js** e **Laravel**, conectando interface, regras de negócio e backend, e reduzi uma tarefa de alguns minutos para menos de **30 segundos**.
+      - Conduzi alinhamentos técnicos em inglês com um cliente americano durante um contrato de cerca de **3 meses**, quebrando requisitos abertos em entregas pequenas e testáveis.
+
+  - company: Braziliana
+    period:
+      from: Set 2024
+      to: Mar 2025
+    role: Desenvolvedor Full Stack
+    url: https://brazilianashop.com.br
+    bullets:
+      - Levantei requisitos, defini escopo e desenvolvi funcionalidades em **PHP** para um sistema de redirecionamento de compras dos EUA para o Brasil, tirando o projeto de uma operação manual para um fluxo web estruturado.
+      - Implementei a geração automatizada de etiquetas integrada à **API dos Correios**, reduzindo cada operação de cerca de **5 minutos** para menos de **1 minuto** e diminuindo erros de digitação.
+
+  - company: IN Junior
+    period:
+      from: Nov 2021
+      to: Mar 2023
+    role: Desenvolvedor Back-end e Gerente de QA
+    url: https://injunior.com.br
+    bullets:
+      - Atuei em projetos para clientes externos desde o contato inicial e a definição de escopo até desenvolvimento, testes e entrega final, reduzindo ruído entre cliente, gestão e equipe técnica.
+      - Estruturei processos de **QA** com testes manuais e automatizados, reduzindo retrabalho e criando critérios mais claros de validação antes da entrega ao cliente.
+      - Conduzi processos seletivos e treinamentos de novos membros, avaliando candidatos e orientando práticas técnicas para acelerar a entrada de pessoas novas nos projetos.
+
+projects:
+  - company: Agora Leads
+    period:
+      from: Set 2025
+      to: Atual
+    role: Fundador e Desenvolvedor Full Stack
+    url: https://agoraleads.com.br
+    bullets:
+      - Criei e mantenho um **SaaS B2B** em produção, usado diariamente por mais de **5 empresas**, assumindo arquitetura, desenvolvimento full-stack, modelagem de dados, infraestrutura, deploy e operação.
+      - Estruturei um monorepo com **Next.js**, **TypeScript**, **Express.js**, **Drizzle** e **PostgreSQL**, separando domínios, casos de uso, infraestrutura e tipos compartilhados com **DDD**, **SOLID** e **Clean Architecture**.
+      - Implementei **Redis** para caching adaptativo e **RabbitMQ** para processamento assíncrono com workers, retries e backoff, tirando operações pesadas do fluxo síncrono das APIs.
+      - Configurei a infraestrutura de produção com **Docker**, **Traefik**, **TLS**, ambiente **Linux** e automações de deploy, deixando o ambiente reproduzível e menos dependente de processos manuais.
+
+  - company: Inspira Design
+    period:
+      from: Out 2023
+      to: Jul 2024
+    role: Desenvolvedor Front-end
+    url: https://inspiradesignuff.com.br
+    bullets:
+      - Desenvolvi componentes reutilizáveis em **React** para um site de eventos universitários, cobrindo programação, visualização de eventos e fluxo de compra de ingressos com uma base mais fácil de manter pela equipe.
+      - Integrei o front-end ao **Mercado Pago** para venda de ingressos em produção, permitindo a validação completa da jornada de compra antes do uso pelos participantes.
+
+education:
+  - institution: Universidade Federal Fluminense
+    period:
+      from: Jun 2021
+      to: Dez 2026*
+    degree: Bacharelado em Ciência da Computação
+    location: Niterói, RJ
+
+skills:
+  - label: Backend
+    items: TypeScript, Node.js, Express.js, NestJS, Java, Spring Boot, Python, PHP, Laravel, Ruby on Rails, Redis, RabbitMQ
+  - label: Frontend
+    items: React, Next.js, Vue.js, HTML, CSS, JavaScript
+  - label: Dados
+    items: PostgreSQL, OracleDB, MySQL, SQL
+  - label: Infraestrutura
+    items: Docker, Linux, AWS EC2/S3, DigitalOcean, GCP, Vercel, Railway, Cloudflare, VPS, CI/CD, deploy, monitoramento, DNS/SMTP
+  - label: Testes
+    items: Selenium, Playwright, Cucumber, Jest, JUnit, Scrapy
+  - label: Idiomas
+    items: Português (Nativo), Inglês (Fluente)
+
+output_filename: curriculo_gustavo_cosme_fullstack_ptbr

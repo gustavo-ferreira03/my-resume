@@ -2,7 +2,7 @@
 """Build one or more YAML resumes into LaTeX and PDF files.
 
 Run from the repo root:
-    python3 .github/build.py
+    python3 .github/resume_ci.py
 
 YAML files at the repo root are discovered automatically (*.example.yml excluded).
 Pass paths explicitly to build specific files only.

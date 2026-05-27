@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/gustavo-ferreira03/resume-ci/main/.github/resume.schema.json",
+  "title": "resume-ci YAML Resume",
+  "description": "Schema for resume YAML files in resumes/*.yml.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "personal",
+    "experience",
+    "education",
+    "skills",
+    "output_filename"
+  ],
+  "properties": {
+    "personal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "title",
+        "email",
+        "linkedin_url",
+        "github_url"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "linkedin_url": {
+          "$ref": "#/$defs/urlString"
+        },
+        "github_url": {
+          "$ref": "#/$defs/urlString"
+        }
+      }
+    },
+    "font": {
+      "type": "string",
+      "description": "LaTeX font package preset. Defaults to lmodern when omitted.",
+      "default": "lmodern",
+      "enum": [
+        "lmodern",
+        "charter",
+        "cormorant",
+        "fira-sans",
+        "source-sans"
+      ]
+    },
+    "section_titles": {
+      "type": "object",
+      "description": "Optional section title overrides. Missing titles fall back to English defaults.",
+      "additionalProperties": false,
+      "properties": {
+        "experience": {
+          "$ref": "#/$defs/nonEmptyString",
+          "default": "Experience"
+        },
+        "projects": {
+          "$ref": "#/$defs/nonEmptyString",
+          "default": "Projects"
+        },
+        "education": {
+          "$ref": "#/$defs/nonEmptyString",
+          "default": "Education"
+        },
+        "skills": {
+          "$ref": "#/$defs/nonEmptyString",
+          "default": "Technical Skills"
+        }
+      }
+    },
+    "experience": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/roleEntry"
+      }
+    },
+    "projects": {
+      "type": "array",
+      "description": "Same shape as experience. Omit it or set it to [] to hide the section.",
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/roleEntry"
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/educationEntry"
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/skillEntry"
+      }
+    },
+    "output_filename": {
+      "type": "string",
+      "description": "PDF file name without the .pdf extension.",
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "urlString": {
+      "type": "string",
+      "format": "uri",
+      "minLength": 1
+    },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "to": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "roleEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company",
+        "period",
+        "role",
+        "url",
+        "bullets"
+      ],
+      "properties": {
+        "company": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "period": {
+          "$ref": "#/$defs/period"
+        },
+        "role": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "url": {
+          "$ref": "#/$defs/urlString"
+        },
+        "bullets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "educationEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "institution",
+        "period",
+        "degree",
+        "location"
+      ],
+      "properties": {
+        "institution": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "period": {
+          "$ref": "#/$defs/period"
+        },
+        "degree": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "location": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "skillEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "items"
+      ],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "items": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    }
+  }
+}

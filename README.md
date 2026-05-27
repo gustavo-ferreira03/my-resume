@@ -1,6 +1,6 @@
 # ResumeCI
 
-Build PDF resumes from YAML. Edit the content, push to GitHub, and download the finished PDF from Actions.
+Build PDF resumes from YAML. Edit the content, push to GitHub, and download the finished PDF from Releases.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -10,7 +10,7 @@ This template is for people who want a clean LaTeX resume without installing LaT
 
 - Resume content in plain YAML
 - One LaTeX template for the whole design
-- Automatic builds for every non-example `.yml` file in `resumes/`
+- Automatic builds for every `.yml` file in `resumes/`
 - English, Spanish, and Portuguese (BR) examples
 - Text-extractable PDFs that work better with ATS parsers
 
@@ -25,7 +25,7 @@ This template is for people who want a clean LaTeX resume without installing LaT
 
 3. Edit `resumes/resume-en.yml` with your own details.
 4. Push to `main`.
-5. Open the Actions tab and download the artifact from the latest `Build Resumes` run.
+5. Go to the **Releases** tab and download your PDF.
 
 > [!IMPORTANT]
 > Remember to keep your repository **private** as resume files may contain personal contact information.
@@ -36,13 +36,13 @@ This template is for people who want a clean LaTeX resume without installing LaT
 resumes/*.yml + template.tex
         |
         v
-.github/build.py       checks YAML and writes build/*.tex
+.github/build.py       validates YAML and writes build/*.tex
         |
         v
 xu-cheng/latex-action  compiles build/*.tex to PDF
         |
         v
-GitHub Actions         uploads the PDFs as an artifact
+GitHub Releases        publishes each PDF as a downloadable asset
 ```
 
 The workflow runs in two steps. First, `.github/build.py` validates each resume file and renders a `.tex` file into `build/`. Then `xu-cheng/latex-action` compiles those `.tex` files inside a TeX Live Docker image.
@@ -64,7 +64,7 @@ template.tex                  LaTeX layout
 
 ## Multiple Resumes
 
-Add one YAML file per version. The workflow compiles every `*.yml` file in `resumes/`, except files ending in `.example.yml`.
+Add one YAML file per version. The workflow compiles every `*.yml` file in `resumes/`.
 
 ```text
 resumes/resume-en.yml    ->  resume_your_name_en.pdf

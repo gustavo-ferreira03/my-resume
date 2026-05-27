@@ -2,23 +2,19 @@
 
 \usepackage[paperwidth=210mm, paperheight=500mm, left=0.7cm, top=0.5cm, right=0.7cm, bottom=0.5cm, nohead, nofoot]{geometry}
 
-% Keep a single page by expanding the PDF height to the rendered content.
 \AtEndDocument{%
   \newlength{\contentHeight}%
   \setlength{\contentHeight}{\dimexpr\pagetotal+1cm\relax}%
   \pdfpageheight=\contentHeight%
 }
 
-% ATS parsability — ensures text can be extracted from PDF by Applicant Tracking Systems
 \input{glyphtounicode}
 \pdfgentounicode=1
 
-% Font and encoding
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 {{font_package}}
 
-% Packages
 \usepackage{latexsym}
 \usepackage{xcolor}
 \usepackage{titlesec}
@@ -29,11 +25,9 @@
 \usepackage{fontawesome5}
 \urlstyle{same}
 
-% Colors
 \definecolor{primary}{HTML}{000000}
 \definecolor{secondary}{HTML}{222222}
 
-% Disable headers and footers
 \pagestyle{fancy}
 \fancyhf{}
 \fancyfoot{}
@@ -41,13 +35,11 @@
 \renewcommand{\footrulewidth}{0pt}
 \setlength{\footskip}{4.1pt}
 
-% Global spacing
 \raggedright
 \raggedbottom
 \setlength{\tabcolsep}{0in}
 \linespread{0.96}
 
-% Section formatting
 \titleformat{\section}
   {\vspace{-3pt}\raggedright\Large\bfseries\color{primary}}
   {}{0em}
@@ -56,7 +48,6 @@
 
 \titlespacing*{\section}{0pt}{0.85em}{0.55em}
 
-% Custom commands based on the Jake Gutierrez resume structure
 \newcommand{\name}[1]{\begin{center}{\Huge\bfseries #1}\end{center}\vspace{-0.75em}}
 \newcommand{\jobtitle}[1]{\begin{center}\large\bfseries\color{secondary}#1\end{center}\vspace{-0.9em}}
 \newcommand{\contact}[1]{\begin{center}\small\color{secondary}\begin{minipage}{0.95\textwidth}\centering #1\end{minipage}\end{center}\vspace{-0.25em}}

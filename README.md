@@ -3,7 +3,6 @@
 > Build professional LaTeX/PDF resumes from YAML files — no local setup required.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![CI](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 
 Push your YAML → GitHub Actions compiles → PDF artifact ready to download.
 

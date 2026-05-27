@@ -1,36 +1,38 @@
 # Resume Manager
 
-GitHub template repository for building LaTeX/PDF resumes from YAML — no local LaTeX required.
+GitHub template repository for building LaTeX/PDF resumes from YAML — no local setup required.
 
 Push your YAML → GitHub Actions compiles → PDF available as artifact.
 
 ## Quick Start
 
 1. Click **"Use this template"** → create a **private** repository
-2. Copy an example to your resume file:
+2. Copy an example and rename it:
    ```bash
-   cp resumes/resume-en.example.yml resumes/resume-en.yml
+   cp resume-en.example.yml resume-en.yml
    ```
-3. Edit `resumes/resume-en.yml` with your information
+3. Edit `resume-en.yml` with your information
 4. Push to `main` → **Actions** tab → download the PDF artifact
 
 > **Keep your repo private.** Resume files contain personal contact information.
 
 ## How It Works
 
-```
-resumes/*.yml  +  template.tex  →  build.py  →  PDF artifact
-```
+The build logic lives entirely in `.github/workflows/build.yml`. The workflow:
+1. Installs LaTeX
+2. Finds all `*.yml` files in the repo root (ignores `*.example.yml`)
+3. Validates each file, renders `template.tex`, compiles a PDF
+4. Uploads PDFs as artifacts (90-day retention)
 
-The build script validates your YAML, renders the LaTeX template, and compiles a PDF — all in CI.
+No build script to maintain — just YAML and a template.
 
 ## Multiple Resumes
 
-Any `*.yml` file in `resumes/` (except `*.example.yml`) is built automatically:
+Any `*.yml` file in the root (except `*.example.yml`) is built automatically:
 
 ```
-resumes/resume-en.yml   →  resume_your_name_en.pdf
-resumes/resume-pt.yml   →  resume_seu_nome_pt.pdf
+resume-en.yml   →  resume_your_name_en.pdf
+resume-pt.yml   →  resume_seu_nome_pt.pdf
 ```
 
 ## YAML Schema
@@ -72,15 +74,6 @@ education:
     location: City, State
 
 output_filename: resume_your_name  # letters, digits, _ and - only
-```
-
-## Running Locally
-
-Requires Python 3.10+ and a LaTeX distribution with `pdflatex`.
-
-```bash
-pip install pyyaml
-python3 build.py
 ```
 
 ## Customizing the Layout

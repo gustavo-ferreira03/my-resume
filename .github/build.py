@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Build one or more YAML resumes into LaTeX and PDF files.
 
-Run from the repo root. YAML files in resumes/ are discovered automatically.
-Pass YAML paths explicitly to build specific files only.
+Run from the repo root:
+    python3 .github/build.py
+
+YAML files at the repo root are discovered automatically (*.example.yml excluded).
+Pass paths explicitly to build specific files only.
 """
 
 from __future__ import annotations
@@ -16,13 +19,13 @@ from urllib.parse import urlparse
 
 try:
     import yaml
-except ImportError:  # pragma: no cover - user-facing dependency message
-    print("Missing dependency: PyYAML. Install it with: python3 -m pip install PyYAML", file=sys.stderr)
+except ImportError:
+    print("Missing dependency: pip install pyyaml", file=sys.stderr)
     sys.exit(1)
 
 
 DEFAULT_TEMPLATE = Path.cwd() / "template.tex"
-DEFAULT_DATA_DIR = Path.cwd() / "resumes"
+DEFAULT_DATA_DIR = Path.cwd()
 BEGIN_DOCUMENT = r"\begin{document}"
 END_DOCUMENT = r"\end{document}"
 
@@ -43,11 +46,11 @@ DEFAULT_SECTION_TITLES = {
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build resume PDFs from YAML data files.")
+    parser = argparse.ArgumentParser(description="Build resume PDFs from YAML files.")
     parser.add_argument("data_paths", nargs="*", type=Path, help="YAML resume files to build")
     parser.add_argument("--template", type=Path, default=DEFAULT_TEMPLATE, help="LaTeX template path")
-    parser.add_argument("--output-dir", type=Path, help="Directory for generated .tex and .pdf files")
-    parser.add_argument("--keep-aux", action="store_true", help="Keep pdflatex aux/log/out files")
+    parser.add_argument("--output-dir", type=Path, help="Output directory for .pdf files")
+    parser.add_argument("--keep-aux", action="store_true", help="Keep pdflatex aux/log files")
     return parser.parse_args()
 
 
@@ -62,11 +65,7 @@ def discover_data_paths(explicit_paths: list[Path]) -> list[Path]:
     if found:
         return found
 
-    print(
-        "No resume YAML files found. Add a .yml file to the resumes/ directory "
-        "or pass one or more YAML paths explicitly.",
-        file=sys.stderr,
-    )
+    print("No resume YAML files found. Add a .yml file to the repo root.", file=sys.stderr)
     sys.exit(1)
 
 
@@ -103,7 +102,6 @@ def validate_entry(value: object, path: str) -> dict:
     for index, bullet in enumerate(bullets):
         if not isinstance(bullet, str):
             raise ValueError(f"{path}.bullets[{index}] must be a string")
-
     return {
         "company": require_str(entry, "company", path),
         "period": validate_period(entry.get("period"), f"{path}.period"),
@@ -125,7 +123,10 @@ def validate_resume(raw: object, data_path: Path) -> dict:
     if not re.match(r"^[A-Za-z0-9_-]+$", output_filename):
         raise ValueError("output_filename must only contain letters, digits, _ or -")
 
-    section_titles = {**DEFAULT_SECTION_TITLES, **require_mapping(data.get("section_titles", {}), "section_titles")}
+    section_titles = {
+        **DEFAULT_SECTION_TITLES,
+        **require_mapping(data.get("section_titles", {}), "section_titles"),
+    }
     for key in DEFAULT_SECTION_TITLES:
         if not isinstance(section_titles.get(key), str) or not section_titles[key].strip():
             raise ValueError(f"section_titles.{key} must be a non-empty string")
@@ -133,24 +134,20 @@ def validate_resume(raw: object, data_path: Path) -> dict:
     skills = []
     for index, skill in enumerate(require_list(data.get("skills"), "skills")):
         skill_map = require_mapping(skill, f"skills[{index}]")
-        skills.append(
-            {
-                "label": require_str(skill_map, "label", f"skills[{index}]"),
-                "items": require_str(skill_map, "items", f"skills[{index}]"),
-            }
-        )
+        skills.append({
+            "label": require_str(skill_map, "label", f"skills[{index}]"),
+            "items": require_str(skill_map, "items", f"skills[{index}]"),
+        })
 
     education = []
     for index, item in enumerate(require_list(data.get("education"), "education")):
         edu = require_mapping(item, f"education[{index}]")
-        education.append(
-            {
-                "institution": require_str(edu, "institution", f"education[{index}]"),
-                "period": validate_period(edu.get("period"), f"education[{index}].period"),
-                "degree": require_str(edu, "degree", f"education[{index}]"),
-                "location": require_str(edu, "location", f"education[{index}]"),
-            }
-        )
+        education.append({
+            "institution": require_str(edu, "institution", f"education[{index}]"),
+            "period": validate_period(edu.get("period"), f"education[{index}].period"),
+            "degree": require_str(edu, "degree", f"education[{index}]"),
+            "location": require_str(edu, "location", f"education[{index}]"),
+        })
 
     return {
         "personal": {
@@ -176,10 +173,6 @@ def validate_resume(raw: object, data_path: Path) -> dict:
     }
 
 
-def url_to_display(url: str) -> str:
-    return re.sub(r"^https?://", "", url)
-
-
 def url_to_domain(url: str) -> str:
     hostname = urlparse(url).hostname or ""
     parts = hostname.split(".")
@@ -189,7 +182,7 @@ def url_to_domain(url: str) -> str:
 
 def profile_username(url: str) -> str:
     path = urlparse(url).path.strip("/")
-    return path.split("/")[-1] if path else url_to_display(url)
+    return path.split("/")[-1] if path else re.sub(r"^https?://", "", url)
 
 
 def rich_to_latex(text: str) -> str:
@@ -288,7 +281,7 @@ def build_resume(data_path: Path, template: str, output_dir: Path | None, keep_a
     tex = (
         render(template[:begin_pos], ctx)
         + BEGIN_DOCUMENT
-        + render(template[begin_pos + len(BEGIN_DOCUMENT) : end_pos], ctx)
+        + render(template[begin_pos + len(BEGIN_DOCUMENT):end_pos], ctx)
         + END_DOCUMENT
         + "\n"
     )
@@ -310,7 +303,7 @@ def build_resume(data_path: Path, template: str, output_dir: Path | None, keep_a
         raise RuntimeError(f"PDF not generated: {pdf_path}")
 
     if not keep_aux:
-        for ext in ("aux", "log", "out"):
+        for ext in ("aux", "log", "out", "tex"):
             (target_dir / f"{output_name}.{ext}").unlink(missing_ok=True)
 
     return pdf_path
@@ -325,14 +318,17 @@ def main() -> None:
     template = args.template.read_text()
     data_paths = discover_data_paths(args.data_paths)
 
-    try:
-        pdf_paths = [build_resume(path, template, args.output_dir, args.keep_aux) for path in data_paths]
-    except Exception as exc:
-        print(str(exc), file=sys.stderr)
-        sys.exit(1)
+    failed = False
+    for path in data_paths:
+        try:
+            pdf_path = build_resume(path, template, args.output_dir, args.keep_aux)
+            print(f"OK: {pdf_path}")
+        except Exception as exc:
+            print(f"FAILED {path}: {exc}", file=sys.stderr)
+            failed = True
 
-    for pdf_path in pdf_paths:
-        print(f"PDF generated: {pdf_path}")
+    if failed:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

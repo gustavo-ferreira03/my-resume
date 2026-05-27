@@ -1,16 +1,17 @@
-# Python
+# Python cache
 __pycache__/
 *.pyc
 
-# Generated resume files (download from GitHub Actions artifacts)
-resumes/*.pdf
-resumes/*.tex
+# Generated resume outputs
+*.pdf
+*.tex
+!template.tex
 
 # Personal data
 .env
 profile/
 data/
 
-# Local AI tooling — personal, not part of the template
+# Local AI tooling
 .agents/
 skills/

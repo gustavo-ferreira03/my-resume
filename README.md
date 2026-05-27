@@ -1,108 +1,114 @@
 # Resume Manager
 
-> Build professional LaTeX/PDF resumes from YAML files — no local setup required.
+Build PDF resumes from YAML. Edit the content, push to GitHub, and download the finished PDF from Actions.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Push your YAML → GitHub Actions compiles → PDF artifact ready to download.
+This template is for people who want a clean LaTeX resume without installing LaTeX. Your resume data stays in `resumes/*.yml`. The layout stays in `template.tex`. GitHub Actions handles the compile step.
 
-## Features
+## What You Get
 
-- **Zero local dependencies** — LaTeX runs entirely in CI via [xu-cheng/latex-action](https://github.com/xu-cheng/latex-action)
-- **Data-driven** — resume content lives in plain YAML; the layout is a separate `.tex` template
-- **Multi-resume** — every `.yml` file in `resumes/` is compiled automatically on push
-- **Multilingual** — comes with English, Spanish, and Portuguese (BR) examples
-- **ATS-friendly** — the default template embeds glyph-to-unicode mappings for text extraction
+- Resume content in plain YAML
+- One LaTeX template for the whole design
+- Automatic builds for every non-example `.yml` file in `resumes/`
+- English, Spanish, and Portuguese (BR) examples
+- Text-extractable PDFs that work better with ATS parsers
 
 ## Quick Start
 
-1. Click [**Use this template**](../../generate) → create a **private** repository
+1. Click [Use this template](../../generate) and create a private repository.
+2. Copy an example file:
 
-2. Copy an example and rename it:
    ```bash
    cp resumes/resume-en.example.yml resumes/resume-en.yml
    ```
 
-3. Edit `resumes/resume-en.yml` with your information
-
-4. Push to `main` → open the **Actions** tab → download your PDF artifact
+3. Edit `resumes/resume-en.yml` with your own details.
+4. Push to `main`.
+5. Open the Actions tab and download the artifact from the latest `Build Resumes` run.
 
 > [!IMPORTANT]
-> Keep your repository **private**. Resume files contain personal contact information.
+> Remember to keep your repository **private** as resume files may contain personal contact information.
 
 ## How It Works
 
-```
-resumes/*.yml  +  template.tex
-       │
-       ▼
-  .github/build.py          validates YAML, renders template → .tex
-       │
-       ▼
-  xu-cheng/latex-action      compiles .tex → .pdf
-       │
-       ▼
-  GitHub Actions artifact    download from the Actions tab
+```text
+resumes/*.yml + template.tex
+        |
+        v
+.github/build.py       checks YAML and writes build/*.tex
+        |
+        v
+xu-cheng/latex-action  compiles build/*.tex to PDF
+        |
+        v
+GitHub Actions         uploads the PDFs as an artifact
 ```
 
-The Python build script runs first and generates intermediate `.tex` files into a `build/` directory. The LaTeX action then compiles them using a pre-built TeX Live Docker image — no `apt-get install texlive` needed.
+The workflow runs in two steps. First, `.github/build.py` validates each resume file and renders a `.tex` file into `build/`. Then `xu-cheng/latex-action` compiles those `.tex` files inside a TeX Live Docker image.
+
+You do not need to install TeX locally or add `apt-get install texlive` to the workflow.
 
 ## Repository Structure
 
-```
+```text
 resumes/
   resume-en.example.yml       English example
   resume-es.example.yml       Spanish example
   resume-ptbr.example.yml     Portuguese (BR) example
-template.tex                  LaTeX layout — edit to change the design
+template.tex                  LaTeX layout
 .github/
-  build.py                    Build script (YAML → TEX)
-  workflows/build.yml         CI pipeline
+  build.py                    YAML to TEX builder
+  workflows/build.yml         GitHub Actions workflow
 ```
 
 ## Multiple Resumes
 
-Every `*.yml` file inside `resumes/` (except `*.example.yml`) is compiled on each push:
+Add one YAML file per version. The workflow compiles every `*.yml` file in `resumes/`, except files ending in `.example.yml`.
 
-```
-resumes/resume-en.yml    →  resume_your_name_en.pdf
-resumes/resume-es.yml    →  curriculum_su_nombre_es.pdf
-resumes/resume-ptbr.yml  →  curriculo_seu_nome_ptbr.pdf
+```text
+resumes/resume-en.yml    ->  resume_your_name_en.pdf
+resumes/resume-es.yml    ->  curriculum_su_nombre_es.pdf
+resumes/resume-ptbr.yml  ->  curriculo_seu_nome_ptbr.pdf
 ```
 
-> [!TIP]
-> Use separate files per language or per job target. Each file compiles independently.
+Use this for different languages, job targets, or resume lengths. Each file builds on its own.
 
 ## YAML Reference
 
-See the example files in [`resumes/`](resumes/) for the full schema. Key fields:
+Start with one of the example files in [`resumes/`](resumes/). These are the main fields:
 
-| Field | Description |
+| Field | What it controls |
 |---|---|
-| `personal` | Name, title, email, LinkedIn and GitHub URLs |
-| `font` | `lmodern` · `charter` · `cormorant` · `fira-sans` · `source-sans` |
-| `section_titles` | Override section header labels (useful for non-English resumes) |
-| `experience` | List of roles with company, period, bullets |
-| `projects` | Same structure as experience — set to `[]` to hide |
-| `education` | Institution, degree, location, period |
-| `skills` | List of `label: items` pairs |
-| `output_filename` | PDF file name (letters, digits, `_` and `-` only) |
+| `personal` | Name, title, email, LinkedIn URL, and GitHub URL |
+| `font` | One of `lmodern`, `charter`, `cormorant`, `fira-sans`, or `source-sans` |
+| `section_titles` | Section labels, useful for non-English resumes |
+| `experience` | Roles with company, period, URL, and bullets |
+| `projects` | Same shape as `experience`; set it to `[]` to hide the section |
+| `education` | Institution, degree, location, and period |
+| `skills` | List of `label` and `items` pairs |
+| `output_filename` | PDF file name without the `.pdf` extension |
 
-**Bullet formatting:**
+Use only letters, digits, `_`, and `-` in `output_filename`.
 
-| Marker | Output |
+## Bullet Formatting
+
+The builder supports two Markdown-style markers inside resume bullets:
+
+| Marker | PDF output |
 |---|---|
-| `**text**` | **bold** |
-| `_text_` | _italic_ |
+| `**text**` | bold text |
+| `_text_` | italic text |
 
-## Customizing the Layout
+## Customizing The Layout
 
-Edit `template.tex` to change margins, colors, font sizes, or section order. The template is plain LaTeX with a simple `{{placeholder}}` syntax — no framework involved.
+Edit `template.tex` to change margins, colors, font sizes, or section order.
+
+The template uses simple `{{placeholder}}` tags. There is no template framework to learn.
 
 ## Running Locally
 
-> [!NOTE]
-> Local compilation requires Python 3.10+ and a LaTeX distribution with `pdflatex` (e.g. TeX Live or MiKTeX).
+Local builds need Python 3.10+ and a LaTeX distribution with `pdflatex`, such as TeX Live or MiKTeX.
 
 ```bash
 pip install pyyaml

@@ -6,8 +6,6 @@ Build PDF resumes from YAML. Edit the content, push to GitHub, and download the 
 
 This project is for people who want a clean LaTeX resume without installing LaTeX. Your resume data stays in `resumes/*.yml`. The layout stays in `template.tex`. GitHub Actions handles the compile step.
 
-Fork the repository to get started — forking keeps a connection to upstream so you can pull in improvements to the template and workflow later.
-
 ## What You Get
 
 - Resume content in plain YAML
@@ -18,23 +16,32 @@ Fork the repository to get started — forking keeps a connection to upstream so
 
 ## Quick Start
 
-1. [Fork this repository](../../fork) and make your fork **private**.
-2. Copy an example file:
+1. Create a new **private** repository on GitHub (do not initialize it).
+2. Clone and rewire this repo to your private one:
+
+   ```bash
+   git clone https://github.com/gustavo-ferreira03/resume-ci.git
+   cd resume-ci
+   git remote rename origin upstream
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_PRIVATE_REPO.git
+   git push -u origin main
+   ```
+
+3. Copy an example file and edit it with your details:
 
    ```bash
    cp resumes/resume-en.example.yml resumes/resume-en.yml
    ```
 
-3. Edit `resumes/resume-en.yml` with your own details.
 4. Push to `main`.
 5. Go to the **Releases** tab and download your PDF.
 
 > [!IMPORTANT]
-> Keep your fork **private**. Resume files contain personal contact information.
+> Keep your repository **private**. Resume files contain personal contact information.
 
 ## Pulling Upstream Updates
 
-When the template or workflow is improved, sync your fork:
+When the template or workflow is improved, sync your repository:
 
 ```bash
 git fetch upstream

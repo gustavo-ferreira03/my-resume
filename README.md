@@ -1,24 +1,24 @@
 # resume-ci
 
-Build PDF resumes from YAML. Edit the content, push to GitHub, and download the finished PDF from Releases.
+Build PDF resumes from YAML. Write your resume once, push to GitHub, and download the PDF from Releases.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-This project is for people who want a clean LaTeX resume without installing LaTeX. Your resume data stays in `resumes/*.yml`. The layout stays in `template.tex`. GitHub Actions handles the compile step.
+`resume-ci` is for people who want a clean LaTeX resume without having to install complex dependencies. Your content lives in `resumes/*.yml`. The design lives in `template.tex`. GitHub Actions does the build.
 
 ## What You Get
 
 - Resume content in plain YAML
-- One LaTeX template for the whole design
+- One LaTeX template for the design
 - Automatic builds for every `.yml` file in `resumes/`
 - English, Spanish, and Portuguese (BR) examples
 - Text-extractable PDFs that work better with ATS parsers
 
 ## Quick Start
 
-**Option A — Public repo:** [Fork this repository](../../fork), then skip to step 2.
+For a public repo, [fork this repository](../../fork).
 
-**Option B — Private repo:** Create a new private repository on GitHub (do not initialize it), then clone and rewire:
+For a private repo, create an empty private repository on GitHub, then run:
 
 ```bash
 git clone https://github.com/gustavo-ferreira03/resume-ci.git
@@ -28,27 +28,24 @@ git remote add origin https://github.com/YOUR_USERNAME/YOUR_PRIVATE_REPO.git
 git push -u origin main
 ```
 
-Either way, continue from here:
+Then add your resume:
 
-1. Copy an example file and fill in your details:
+```bash
+cp resumes/resume-en.example.yml resumes/resume-en.yml
+```
 
-   ```bash
-   cp resumes/resume-en.example.yml resumes/resume-en.yml
-   ```
+Edit `resumes/resume-en.yml`, push to `main`, and download the PDF from the Releases tab.
 
-2. Push to `main`.
-3. Go to the **Releases** tab and download your PDF.
+## Pulling Updates
 
-## Pulling Upstream Updates
-
-When the template or workflow is improved, sync your repository:
+When this template changes, pull the latest version into your repo:
 
 ```bash
 git fetch upstream
 git merge upstream/main
 ```
 
-Your files in `resumes/` are not part of this repository, so merges will be conflict-free.
+Your own resume files should not conflict with upstream changes unless you edit the same example files or template files.
 
 ## How It Works
 
@@ -65,9 +62,9 @@ xu-cheng/latex-action  compiles build/*.tex to PDF
 GitHub Releases        publishes each PDF as a downloadable asset
 ```
 
-The workflow runs in two steps. First, `.github/build.py` validates each resume file and renders a `.tex` file into `build/`. Then `xu-cheng/latex-action` compiles those `.tex` files inside a TeX Live Docker image.
+The workflow validates each resume file, renders a `.tex` file into `build/`, and compiles it inside a TeX Live Docker image.
 
-You do not need to install TeX locally or add `apt-get install texlive` to the workflow.
+You do not need a local TeX install. You do not need `apt-get install texlive` in the workflow.
 
 ## Repository Structure
 
@@ -92,7 +89,7 @@ resumes/resume-es.yml    ->  curriculum_su_nombre_es.pdf
 resumes/resume-ptbr.yml  ->  curriculo_seu_nome_ptbr.pdf
 ```
 
-Use this for different languages, job targets, or resume lengths. Each file builds on its own.
+Use separate files for languages, job targets, or resume lengths. Each file builds on its own.
 
 ## YAML Reference
 

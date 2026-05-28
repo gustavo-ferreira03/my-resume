@@ -54,24 +54,28 @@
 
 \newcommand{\name}[1]{\begin{center}{\Huge\bfseries #1}\end{center}\vspace{-0.75em}}
 \newcommand{\jobtitle}[1]{\begin{center}\large\bfseries\color{secondary}#1\end{center}\vspace{-0.9em}}
-\newcommand{\contact}[1]{\begin{center}\small\color{secondary}\begin{minipage}{0.95\textwidth}\centering #1\end{minipage}\end{center}\vspace{-0.25em}}
+\newcommand{\contact}[1]{\begin{center}\normalsize\color{secondary}\begin{minipage}{0.95\textwidth}\centering #1\end{minipage}\end{center}\vspace{-0.25em}}
 
 \newcommand{\contactlink}[3]{\href{#1}{#2\ \underline{#3}}}
 
 \newcommand{\resumeItem}[1]{
-  \item\small{#1 \vspace{-1pt}}
+  \item\normalsize{#1 \vspace{-1pt}}
 }
 
 \newcommand{\resumeSubheading}[4]{
   \vspace{-2pt}\item
     \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
-      \textbf{#1} & \textbf{\small #2} \\
-      \textbf{\textit{\small #3}} & \textit{\small #4} \\
+      \textbf{#1} & \textbf{\normalsize #2} \\
+      \textit{\normalsize #3} & \textit{\normalsize #4} \\
     \end{tabular*}\vspace{-6pt}
 }
 
 \newcommand{\experienceitem}[5]{
   \resumeSubheading{#1}{#2}{#3}{\href{#5}{#4}}
+}
+
+\newcommand{\plainexperienceitem}[3]{
+  \resumeSubheading{#1}{#2}{#3}{}
 }
 
 \newcommand{\educationitem}[4]{
@@ -80,8 +84,8 @@
 
 \newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.15in]}
-\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-4pt}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.15in, topsep=1pt]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{2pt}}
 
 \renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
 \renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
@@ -91,16 +95,24 @@
 \name{{{personal.name}}}
 \jobtitle{{{personal.title}}}
 \contact{
-    \contactlink{mailto:{{personal.email}}}{\faEnvelope}{{{personal.email}}} $|$
-    \contactlink{{{personal.linkedin_url}}}{\faLinkedin}{{{personal.linkedin_display}}} $|$
-    \contactlink{{{personal.github_url}}}{\faGithub}{{{personal.github_display}}}
+    {{contact_line}}
 }
+{{?summary}}
+\section*{{{section_titles.summary}}}
+
+\normalsize{ {{summary}} }
+\vspace{0.2em}
+{{?/summary}}
 
 \section*{{{section_titles.experience}}}
 
 \resumeSubHeadingListStart
 {{#experience}}
+{{?url}}
 \experienceitem{{{company}}}{{{period}}}{{{role}}}{{{domain}}}{{{url}}}
+{{?/url}}{{?no_url}}
+\plainexperienceitem{{{company}}}{{{period}}}{{{role}}}
+{{?/no_url}}
 \resumeItemListStart
 {{#bullets}}
     \resumeItem{ {{.}} }
@@ -113,7 +125,11 @@
 
 \resumeSubHeadingListStart
 {{#projects}}
+{{?url}}
 \experienceitem{{{company}}}{{{period}}}{{{role}}}{{{domain}}}{{{url}}}
+{{?/url}}{{?no_url}}
+\plainexperienceitem{{{company}}}{{{period}}}{{{role}}}
+{{?/no_url}}
 \resumeItemListStart
 {{#bullets}}
     \resumeItem{ {{.}} }
@@ -122,6 +138,15 @@
 {{/projects}}
 \resumeSubHeadingListEnd
 {{?/projects}}
+{{?certifications}}
+\section*{{{section_titles.certifications}}}
+
+\begin{itemize}[leftmargin=0.15in]
+{{#certifications}}
+    \resumeItem{ {{.}} }
+{{/certifications}}\end{itemize}
+\vspace{-4pt}
+{{?/certifications}}
 \section*{{{section_titles.education}}}
 
 \resumeSubHeadingListStart
@@ -133,7 +158,7 @@
 \section*{{{section_titles.skills}}}
 
 \begin{itemize}[leftmargin=0in, label={}]
-\small{\item{
+\normalsize{\item{
 {{#skills}}
 \textbf{{{label}}}{: {{items}}} \\
 {{/skills}}}}

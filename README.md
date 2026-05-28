@@ -53,7 +53,7 @@ Your own resume files should not conflict with upstream changes unless you edit 
 resumes/*.yml + template.tex
         |
         v
-.github/build.py       validates YAML and writes build/*.tex
+.github/resume_ci.py  validates YAML and writes build/*.tex
         |
         v
 xu-cheng/latex-action  compiles build/*.tex to PDF
@@ -75,8 +75,8 @@ resumes/
   resume-ptbr.example.yml     Portuguese (BR) example
 template.tex                  LaTeX layout
 .github/
-  build.py                    YAML to TEX builder
   workflows/build.yml         GitHub Actions workflow
+  resume_ci.py                YAML to TEX builder
 ```
 
 ## Multiple Resumes
@@ -129,7 +129,7 @@ Local builds need Python 3.10+ and a LaTeX distribution with `pdflatex`, such as
 
 ```bash
 pip install pyyaml
-python3 .github/build.py
+python3 .github/resume_ci.py
 ```
 
 Generated PDFs are written to `build/`.

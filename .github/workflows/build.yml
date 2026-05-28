@@ -6,7 +6,7 @@ on:
     paths:
       - "resumes/*.yml"
       - "template.tex"
-      - ".github/build.py"
+      - ".github/resume_ci.py"
       - ".github/workflows/build.yml"
   workflow_dispatch:
 
@@ -23,7 +23,7 @@ jobs:
         run: pip install pyyaml
 
       - name: Generate LaTeX files
-        run: python3 .github/build.py --tex-only
+        run: python3 .github/resume_ci.py --tex-only
 
       - name: Compile PDFs
         uses: xu-cheng/latex-action@v3

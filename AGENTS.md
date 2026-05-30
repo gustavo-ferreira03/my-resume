@@ -5,22 +5,24 @@ Instructions for agents creating or editing resumes in this repository.
 ## Project Context
 
 - Resume content lives in `resumes/*.yml`.
-- The schema lives in `.github/resume.schema.json`.
-- The builder lives in `.github/resume_ci.py`.
-- The LaTeX layout lives in `template.tex`.
+- The schema lives in `lib/resume.schema.json`.
+- The CLI builder lives in `lib/resume-ci.py`.
+- Typst templates live in `templates/*.typ`.
+- `lib/setup.sh` installs Python dependencies, Typst, and Font Awesome desktop fonts into `bin/`.
 - Keep resume YAML files compatible with the schema and examples.
 
 When adding a new resume YAML file, include this first line:
 
 ```yaml
-# yaml-language-server: $schema=../.github/resume.schema.json
+# yaml-language-server: $schema=../lib/resume.schema.json
 ```
 
 ## YAML Rules
 
 - Use the existing shape from `resumes/*.example.yml`.
-- Keep keys stable: `personal`, `font`, `section_titles`, `experience`, `projects`, `education`, `skills`, `output_filename`.
-- Use `projects: []` when the project section should be hidden.
+- Keep keys stable: `personal`, `summary`, `font`, `section_titles`, `experience`, `projects`, `certifications`, `education`, `skills`, `output_filename`.
+- Use a real Typst font name in `font`; default examples use `New Computer Modern`.
+- Use `[]` to hide any list-backed section; keep required keys present even when empty.
 - Use only letters, digits, `_`, and `-` in `output_filename`.
 - Do not add unsupported fields unless the schema and builder are updated together.
 - Preserve Markdown-style emphasis in bullets only where useful: `**bold**` and `_italic_`.
@@ -99,11 +101,31 @@ Prefer:
 6. Keep the strongest and most relevant evidence near the top.
 7. Validate the YAML and run the builder when changing resume files.
 
-Useful validation command:
+Run setup first if `bin/typst` or `bin/fonts` are missing:
 
 ```bash
-python3 .github/resume_ci.py --tex-only
+lib/setup.sh
 ```
+
+Useful build command:
+
+```bash
+lib/resume-ci.py
+```
+
+Preview while editing:
+
+```bash
+lib/resume-ci.py --watch resumes/my-resume.yml
+```
+
+## Builder And Template Boundaries
+
+- Python owns data work in `lib/resume-ci.py`: schema validation, defaults, period formatting, contact labels, domain extraction, profile usernames, and Markdown-style emphasis parsing.
+- Typst owns presentation work in `templates/*.typ`: page size, margins, spacing, typography, sections, lists, links, and icons.
+- The builder passes normalized data to Typst as JSON through `sys.inputs.data`.
+- Do not make Typst templates load YAML directly or duplicate Python data-normalization logic.
+- If a field must be derived from YAML, add it to the Python context and keep the template focused on layout.
 
 ## Section Guidance
 
@@ -118,7 +140,7 @@ python3 .github/resume_ci.py --tex-only
 
 Before finishing a resume edit, verify:
 
-- YAML matches `.github/resume.schema.json`.
+- YAML matches `lib/resume.schema.json`.
 - Every major bullet can be traced to STAR.
 - No metric or claim was invented.
 - Bullets start with strong action verbs.

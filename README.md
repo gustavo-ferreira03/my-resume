@@ -1,70 +1,81 @@
 # resume-ci
 
-Build PDF resumes from YAML. Write your resume once, push to GitHub, and download the PDF from Releases.
+Build PDF resumes from YAML with Typst.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-`resume-ci` is for people who want a clean LaTeX resume without having to install complex dependencies. Your content lives in `resumes/*.yml`. The design lives in `template.tex`. GitHub Actions does the build.
+Write resume content in `resumes/*.yml`. Keep the layout in `templates/default.typ`. Push to `main`, and GitHub Actions publishes the PDFs as release assets.
 
-## What You Get
+## What This Does
 
-- Resume content in plain YAML
-- One LaTeX template for the design
-- Automatic builds for every `.yml` file in `resumes/`
-- English, Spanish, and Portuguese (BR) examples
-- Text-extractable PDFs that work better with ATS parsers
+- Stores resume content in plain YAML
+- Validates YAML against `lib/resume.schema.json`
+- Builds every `resumes/*.yml` file into a PDF
+- Keeps the template in Typst, not LaTeX
+- Includes English, Spanish, and Portuguese (BR) examples
+- Produces text-extractable PDFs for ATS parsing
 
 ## Quick Start
 
-For a public repo, [fork this repository](../../fork).
+Public repo: [fork this repository](../../fork).
 
-For a private repo, create an empty private repository on GitHub, then run:
+Private repo: create an empty private repository on GitHub, then run:
 
 ```bash
 git clone https://github.com/gustavo-ferreira03/resume-ci.git
 cd resume-ci
 git remote rename origin upstream
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_PRIVATE_REPO.git
+git remote add origin <PRIVATE_REPO_URL>
 git push -u origin main
 ```
 
-Then add your resume:
+Create your own resume from an example:
 
 ```bash
 cp resumes/resume-en.example.yml resumes/resume-en.yml
 ```
 
-Edit `resumes/resume-en.yml`, push to `main`, and download the PDF from the Releases tab.
+Edit `resumes/resume-en.yml`, push to `main`, and download the PDF from the latest release.
 
-## Pulling Updates
+## Local Build
 
-When this template changes, pull the latest version into your repo:
+Local builds need Python 3.10+, `curl`, `tar`, `unzip`, and a POSIX shell. The setup script installs Python dependencies, Typst, and the Font Awesome desktop fonts used by the default template.
 
 ```bash
-git fetch upstream
-git merge upstream/main
+lib/setup.sh
+lib/resume-ci.py
 ```
 
-Your own resume files should not conflict with upstream changes unless you edit the same example files or template files.
+Generated PDFs are written to `build/`.
+
+For live preview, use `--watch`:
+
+```bash
+lib/resume-ci.py --watch resumes/resume-en.yml
+```
+
+The watch mode is handled by Python. It rebuilds when the selected YAML file or the Typst template changes.
 
 ## How It Works
 
 ```text
-resumes/*.yml + template.tex
+resumes/*.yml
         |
         v
-.github/resume_ci.py  validates YAML and writes build/*.tex
+lib/resume-ci.py  validates and normalizes resume data
         |
         v
-xu-cheng/latex-action  compiles build/*.tex to PDF
+templates/default.typ  formats the normalized data
         |
         v
-GitHub Releases        publishes each PDF as a downloadable asset
+Typst  writes build/*.pdf
 ```
 
-The workflow validates each resume file, renders a `.tex` file into `build/`, and compiles it inside a TeX Live Docker image.
+Python owns data work: schema validation, defaults, periods, contact labels, domains, and `**bold**` / `_italic_` parsing.
 
-You do not need a local TeX install. You do not need `apt-get install texlive` in the workflow.
+Typst owns presentation work: page size, spacing, typography, sections, lists, links, and icons.
+
+The builder passes normalized data to Typst as JSON through `sys.inputs.data`. The template should not load or normalize YAML directly.
 
 ## Repository Structure
 
@@ -73,15 +84,20 @@ resumes/
   resume-en.example.yml       English example
   resume-es.example.yml       Spanish example
   resume-ptbr.example.yml     Portuguese (BR) example
-template.tex                  LaTeX layout
+templates/
+  default.typ                 Default Typst layout
+lib/
+  resume-ci.py                YAML validator and Typst runner
+  setup.sh                    Local/CI setup script
+  requirements.txt            Python dependencies
+  resume.schema.json          Resume YAML schema
 .github/
   workflows/build.yml         GitHub Actions workflow
-  resume_ci.py                YAML to TEX builder
 ```
 
 ## Multiple Resumes
 
-Add one YAML file per version. The workflow compiles every `*.yml` file in `resumes/`.
+Add one YAML file per resume version. The workflow compiles every `*.yml` file in `resumes/`.
 
 ```text
 resumes/resume-en.yml    ->  resume_your_name_en.pdf
@@ -89,7 +105,7 @@ resumes/resume-es.yml    ->  curriculum_su_nombre_es.pdf
 resumes/resume-ptbr.yml  ->  curriculo_seu_nome_ptbr.pdf
 ```
 
-Use separate files for languages, job targets, or resume lengths. Each file builds on its own.
+Use separate files for languages, job targets, or resume lengths. Each file builds independently.
 
 ## YAML Reference
 
@@ -97,39 +113,57 @@ Start with one of the example files in [`resumes/`](resumes/). These are the mai
 
 | Field | What it controls |
 |---|---|
-| `personal` | Name, title, email, LinkedIn URL, and GitHub URL |
-| `font` | One of `lmodern`, `charter`, `cormorant`, `fira-sans`, or `source-sans` |
-| `section_titles` | Section labels, useful for non-English resumes |
+| `personal` | Name, title, email, phone, location, LinkedIn URL, and GitHub URL |
+| `summary` | Optional short profile summary |
+| `font` | Typst font name; defaults to `New Computer Modern` |
+| `section_titles` | Section labels for non-English resumes |
 | `experience` | Roles with company, period, URL, and bullets |
-| `projects` | Same shape as `experience`; set it to `[]` to hide the section |
+| `projects` | Same shape as `experience` |
+| `certifications` | Optional list of certifications |
 | `education` | Institution, degree, location, and period |
 | `skills` | List of `label` and `items` pairs |
-| `output_filename` | PDF file name without the `.pdf` extension |
+| `output_filename` | PDF file name without `.pdf` |
 
 Use only letters, digits, `_`, and `-` in `output_filename`.
 
+Set any list-backed section to `[]` to hide it. Required list fields such as `experience`, `education`, and `skills` should stay in the YAML even when empty. Optional lists such as `projects` and `certifications` can be omitted or set to `[]`.
+
 ## Bullet Formatting
 
-The builder supports two Markdown-style markers inside resume bullets:
+Bullets support two Markdown-style markers:
 
 | Marker | PDF output |
 |---|---|
 | `**text**` | bold text |
 | `_text_` | italic text |
 
-## Customizing The Layout
+The Python builder parses these markers before sending data to Typst.
 
-Edit `template.tex` to change margins, colors, font sizes, or section order.
+## Templates
 
-The template uses simple `{{placeholder}}` tags. There is no template framework to learn.
+Edit `templates/default.typ` to change margins, fonts, spacing, section order, or contact styling.
 
-## Running Locally
-
-Local builds need Python 3.10+ and a LaTeX distribution with `pdflatex`, such as TeX Live or MiKTeX.
+Use `--template` to build with another Typst file:
 
 ```bash
-pip install pyyaml
-python3 .github/resume_ci.py
+lib/resume-ci.py --template templates/another.typ resumes/resume-en.yml
 ```
 
-Generated PDFs are written to `build/`.
+Keep templates focused on layout. If a value needs to be derived from YAML, do it in `lib/resume-ci.py`.
+
+## Pulling Updates
+
+If you forked this repo and want upstream changes:
+
+```bash
+git fetch upstream
+git merge upstream/main
+```
+
+Your resume files should not conflict unless you changed the same examples or templates.
+
+## Notes
+
+This project no longer uses LaTeX, TeX Live, or Tectonic.
+
+The default template uses Font Awesome icons. `lib/setup.sh` downloads the desktop fonts into `bin/fonts` so local builds and CI render the same icons.

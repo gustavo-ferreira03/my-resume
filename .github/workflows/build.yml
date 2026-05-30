@@ -5,8 +5,9 @@ on:
     branches: [main]
     paths:
       - "resumes/*.yml"
-      - "template.tex"
-      - ".github/resume_ci.py"
+      - "templates/*.typ"
+      - "lib/**"
+      - "lib/resume.schema.json"
       - ".github/workflows/build.yml"
   workflow_dispatch:
 
@@ -19,25 +20,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Python dependencies
-        run: pip install pyyaml
+      - name: Setup build tools
+        run: lib/setup.sh
 
-      - name: Generate LaTeX files
-        run: python3 .github/resume_ci.py --tex-only
-
-      - name: Compile PDFs
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: "*.tex"
-          working_directory: build
-          compiler: pdflatex
-          args: "-interaction=nonstopmode -halt-on-error"
+      - name: Build PDFs
+        run: lib/resume-ci.py
 
       - name: Publish PDFs
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete latest --cleanup-tag --yes 2>/dev/null || true
-          gh release create latest build/*.pdf \
+          tag="build-${{ github.run_number }}"
+          gh release create "$tag" build/*.pdf \
             --title "Resumes" \
             --notes "Built from [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})"

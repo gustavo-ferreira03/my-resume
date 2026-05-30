@@ -2,3 +2,5 @@ __pycache__/
 build/
 *.pdf
 .agents/
+resumes/layane-mirelly.yml
+bin/

@@ -1,17 +1,19 @@
+meta:
+  template: default
+  font: New Computer Modern
+  output_filename: resume_gustavo_cosme_fullstack_en
+  section_titles:
+    experience: Professional Experience
+    projects: Projects
+    education: Education
+    skills: Skills
+
 personal:
   name: Gustavo Ferreira Cosme
   title: Mid-Level Full Stack Developer
   email: gustavo.ferreiracosme03@gmail.com
   linkedin_url: https://linkedin.com/in/gustavo-cosme03
   github_url: https://github.com/gustavo-ferreira03
-
-font: lmodern
-
-section_titles:
-  experience: Professional Experience
-  projects: Projects
-  education: Education
-  skills: Skills
 
 experience:
   - company: PrimeUp
@@ -102,5 +104,3 @@ skills:
     items: Selenium, Playwright, Cucumber, Jest, JUnit, Scrapy
   - label: Languages
     items: Portuguese (Native), English (Fluent)
-
-output_filename: resume_gustavo_cosme_fullstack_en

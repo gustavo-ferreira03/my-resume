@@ -1,17 +1,19 @@
+meta:
+  template: default
+  font: New Computer Modern
+  output_filename: curriculo_gustavo_cosme_fullstack_ptbr
+  section_titles:
+    experience: Experiência Profissional
+    projects: Projetos
+    education: Formação Acadêmica
+    skills: Competências
+
 personal:
   name: Gustavo Ferreira Cosme
   title: Desenvolvedor Full Stack Pleno
   email: gustavo.ferreiracosme03@gmail.com
   linkedin_url: https://linkedin.com/in/gustavo-cosme03
   github_url: https://github.com/gustavo-ferreira03
-
-font: lmodern
-
-section_titles:
-  experience: Experiência Profissional
-  projects: Projetos
-  education: Formação Acadêmica
-  skills: Competências
 
 experience:
   - company: PrimeUp
@@ -102,5 +104,3 @@ skills:
     items: Selenium, Playwright, Cucumber, Jest, JUnit, Scrapy
   - label: Idiomas
     items: Português (Nativo), Inglês (Fluente)
-
-output_filename: curriculo_gustavo_cosme_fullstack_ptbr

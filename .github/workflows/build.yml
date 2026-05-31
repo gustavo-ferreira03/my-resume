@@ -5,9 +5,9 @@ on:
     branches: [main]
     paths:
       - "resumes/*.yml"
-      - "templates/**"
+      - "templates/*.typ"
       - "lib/**"
-      - "setup.sh"
+      - "Makefile"
       - ".github/workflows/build.yml"
   workflow_dispatch:
 
@@ -24,14 +24,18 @@ jobs:
         shell: bash
         run: make setup
 
-      - name: Add Bun to PATH
-        run: echo "$HOME/.bun/bin" >> $GITHUB_PATH
-
       - name: Build PDFs
         shell: bash
         run: make build
 
-      - name: Publish PDFs
+      - name: Upload PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: resumes
+          path: build/*.pdf
+
+      - name: Publish Release
+        if: github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
